@@ -1,6 +1,6 @@
 <?php
 
-namespace Xiaoler\Blade\Compilers\Concerns;
+namespace luoyy\Blade\Compilers\Concerns;
 
 trait CompilesRawPhp
 {
@@ -12,17 +12,11 @@ trait CompilesRawPhp
      */
     protected function compilePhp($expression)
     {
-        return $expression ? "<?php {$expression}; ?>" : '<?php ';
-    }
+        if ($expression) {
+            return "<?php {$expression}; ?>";
+        }
 
-    /**
-     * Compile end-php statements into valid PHP.
-     *
-     * @return string
-     */
-    protected function compileEndphp()
-    {
-        return ' ?>';
+        return '@php';
     }
 
     /**

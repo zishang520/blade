@@ -1,8 +1,10 @@
 <?php
 
-namespace Xiaoler\Blade\Engines;
+namespace luoyy\Blade\Engines;
 
-class FileEngine implements EngineInterface
+use luoyy\Blade\Contracts\View\Engine;
+
+class FileEngine implements Engine
 {
     /**
      * Get the evaluated contents of the view.

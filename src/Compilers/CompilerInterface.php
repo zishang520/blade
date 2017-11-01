@@ -1,6 +1,6 @@
 <?php
 
-namespace Xiaoler\Blade\Compilers;
+namespace luoyy\Blade\Compilers;
 
 interface CompilerInterface
 {

@@ -1,6 +1,6 @@
 <?php
 
-namespace Xiaoler\Blade\Contracts;
+namespace luoyy\Blade\Contracts\Support;
 
 interface Renderable
 {

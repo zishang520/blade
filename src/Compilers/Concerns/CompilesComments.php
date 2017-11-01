@@ -1,6 +1,6 @@
 <?php
 
-namespace Xiaoler\Blade\Compilers\Concerns;
+namespace luoyy\Blade\Compilers\Concerns;
 
 trait CompilesComments
 {

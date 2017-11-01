@@ -1,29 +1,32 @@
 <?php
 
-namespace Xiaoler\Blade;
+namespace luoyy\Blade;
 
-use Exception;
-use Throwable;
 use ArrayAccess;
 use BadMethodCallException;
-use Xiaoler\Blade\Support\Str;
-use Xiaoler\Blade\Contracts\Arrayable;
-use Xiaoler\Blade\Contracts\Renderable;
-use Xiaoler\Blade\Engines\EngineInterface;
+use Exception;
+use luoyy\Blade\Contracts\Support\Arrayable;
+use luoyy\Blade\Contracts\Support\MessageProvider;
+use luoyy\Blade\Contracts\Support\Renderable;
+use luoyy\Blade\Contracts\View\Engine;
+use luoyy\Blade\Contracts\View\View as ViewContract;
+use luoyy\Blade\Support\MessageBag;
+use luoyy\Blade\Support\Str;
+use Throwable;
 
-class View implements ArrayAccess
+class View implements ArrayAccess, ViewContract
 {
     /**
      * The view factory instance.
      *
-     * @var \Xiaoler\Blade\Factory
+     * @var \luoyy\Blade\Factory
      */
     protected $factory;
 
     /**
      * The engine implementation.
      *
-     * @var \Xiaoler\Blade\Engines\EngineInterface
+     * @var \luoyy\Blade\Contracts\View\Engine
      */
     protected $engine;
 
@@ -51,14 +54,14 @@ class View implements ArrayAccess
     /**
      * Create a new view instance.
      *
-     * @param  \Xiaoler\Blade\Factory  $factory
-     * @param  \Xiaoler\Blade\Engines\EngineInterface  $engine
+     * @param  \luoyy\Blade\Factory  $factory
+     * @param  \luoyy\Blade\Contracts\View\Engine  $engine
      * @param  string  $view
      * @param  string  $path
      * @param  mixed  $data
      * @return void
      */
-    public function __construct(Factory $factory, EngineInterface $engine, $view, $path, $data = [])
+    public function __construct(Factory $factory, Engine $engine, $view, $path, $data = [])
     {
         $this->view = $view;
         $this->path = $path;
@@ -88,7 +91,7 @@ class View implements ArrayAccess
             // another view gets rendered in the future by the application developer.
             $this->factory->flushStateIfDoneRendering();
 
-            return ! is_null($response) ? $response : $contents;
+            return !is_null($response) ? $response : $contents;
         } catch (Exception $e) {
             $this->factory->flushState();
 
@@ -194,6 +197,31 @@ class View implements ArrayAccess
     }
 
     /**
+     * Add validation errors to the view.
+     *
+     * @param  \Illuminate\Contracts\Support\MessageProvider|array  $provider
+     * @return $this
+     */
+    public function withErrors($provider)
+    {
+        $this->with('errors', $this->formatErrors($provider));
+
+        return $this;
+    }
+
+    /**
+     * Format the given message provider into a MessageBag.
+     *
+     * @param  \Illuminate\Contracts\Support\MessageProvider|array  $provider
+     * @return \Illuminate\Support\MessageBag
+     */
+    protected function formatErrors($provider)
+    {
+        return $provider instanceof MessageProvider
+        ? $provider->getMessageBag() : new MessageBag((array) $provider);
+    }
+
+    /**
      * Get the name of the view.
      *
      * @return string
@@ -247,7 +275,7 @@ class View implements ArrayAccess
     /**
      * Get the view factory instance.
      *
-     * @return \Xiaoler\Blade\Factory
+     * @return \luoyy\Blade\Factory
      */
     public function getFactory()
     {
@@ -257,7 +285,7 @@ class View implements ArrayAccess
     /**
      * Get the view's rendering engine.
      *
-     * @return \Xiaoler\Blade\Engines\EngineInterface
+     * @return \luoyy\Blade\Contracts\View\Engine
      */
     public function getEngine()
     {
@@ -359,17 +387,17 @@ class View implements ArrayAccess
      *
      * @param  string  $method
      * @param  array   $parameters
-     * @return \Xiaoler\Blade\View
+     * @return \luoyy\Blade\View
      *
      * @throws \BadMethodCallException
      */
     public function __call($method, $parameters)
     {
-        if (! Str::startsWith($method, 'with')) {
+        if (!Str::startsWith($method, 'with')) {
             throw new BadMethodCallException("Method [$method] does not exist on view.");
         }
 
-        return $this->with(Str::snake(substr($method, 4)), $parameters[0]);
+        return $this->with(Str::camel(substr($method, 4)), $parameters[0]);
     }
 
     /**

@@ -1,12 +1,12 @@
 <?php
 
-namespace Xiaoler\Blade\Engines;
+namespace luoyy\Blade\Engines;
 
 use Exception;
+use luoyy\Blade\Contracts\View\Engine;
 use Throwable;
-use Symfony\Component\Debug\Exception\FatalThrowableError;
 
-class PhpEngine implements EngineInterface
+class PhpEngine implements Engine
 {
     /**
      * Get the evaluated contents of the view.
@@ -43,7 +43,7 @@ class PhpEngine implements EngineInterface
         } catch (Exception $e) {
             $this->handleViewException($e, $obLevel);
         } catch (Throwable $e) {
-            $this->handleViewException(new FatalThrowableError($e), $obLevel);
+            $this->handleViewException($e, $obLevel);
         }
 
         return ltrim(ob_get_clean());

@@ -1,9 +1,9 @@
 <?php
 
-namespace Xiaoler\Blade\Concerns;
+namespace luoyy\Blade\Concerns;
 
 use Countable;
-use Xiaoler\Blade\Support\Arr;
+use luoyy\Blade\Support\Arr;
 
 trait ManagesLoops
 {
@@ -29,7 +29,7 @@ trait ManagesLoops
         $this->loopsStack[] = [
             'iteration' => 0,
             'index' => 0,
-            'remaining' => isset($length) ? $length : null,
+            'remaining' => $length ?? null,
             'count' => $length,
             'first' => true,
             'last' => isset($length) ? $length == 1 : null,

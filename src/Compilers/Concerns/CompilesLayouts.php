@@ -1,8 +1,8 @@
 <?php
 
-namespace Xiaoler\Blade\Compilers\Concerns;
+namespace luoyy\Blade\Compilers\Concerns;
 
-use Xiaoler\Blade\Factory as ViewFactory;
+use luoyy\Blade\Factory as ViewFactory;
 
 trait CompilesLayouts
 {

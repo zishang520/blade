@@ -1,6 +1,6 @@
 <?php
 
-namespace Xiaoler\Blade;
+namespace luoyy\Blade;
 
 interface ViewFinderInterface
 {

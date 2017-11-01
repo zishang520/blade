@@ -1,18 +1,17 @@
 <?php
 
-namespace Xiaoler\Blade\Engines;
+namespace luoyy\Blade\Engines;
 
-use Exception;
 use ErrorException;
-use Xiaoler\Blade\Support\Arr;
-use Xiaoler\Blade\Compilers\CompilerInterface;
+use Exception;
+use luoyy\Blade\Compilers\CompilerInterface;
 
 class CompilerEngine extends PhpEngine
 {
     /**
      * The Blade compiler instance.
      *
-     * @var \Xiaoler\Blade\Compilers\CompilerInterface
+     * @var \Illuminate\View\Compilers\CompilerInterface
      */
     protected $compiler;
 
@@ -26,7 +25,7 @@ class CompilerEngine extends PhpEngine
     /**
      * Create a new Blade view engine instance.
      *
-     * @param  \Xiaoler\Blade\Compilers\CompilerInterface  $compiler
+     * @param  \Illuminate\View\Compilers\CompilerInterface  $compiler
      * @return void
      */
     public function __construct(CompilerInterface $compiler)
@@ -88,13 +87,13 @@ class CompilerEngine extends PhpEngine
      */
     protected function getMessage(Exception $e)
     {
-        return $e->getMessage().' (View: '.realpath(Arr::last($this->lastCompiled)).')';
+        return $e->getMessage() . ' (View: ' . realpath(last($this->lastCompiled)) . ')';
     }
 
     /**
      * Get the compiler implementation.
      *
-     * @return \Xiaoler\Blade\Compilers\CompilerInterface
+     * @return \Illuminate\View\Compilers\CompilerInterface
      */
     public function getCompiler()
     {

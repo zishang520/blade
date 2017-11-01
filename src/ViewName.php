@@ -1,6 +1,6 @@
 <?php
 
-namespace Xiaoler\Blade;
+namespace luoyy\Blade;
 
 class ViewName
 {
@@ -20,6 +20,6 @@ class ViewName
 
         list($namespace, $name) = explode($delimiter, $name);
 
-        return $namespace.$delimiter.str_replace('/', '.', $name);
+        return $namespace . $delimiter . str_replace('/', '.', $name);
     }
 }

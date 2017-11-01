@@ -1,6 +1,6 @@
 <?php
 
-namespace Xiaoler\Blade\Concerns;
+namespace luoyy\Blade\Concerns;
 
 use InvalidArgumentException;
 

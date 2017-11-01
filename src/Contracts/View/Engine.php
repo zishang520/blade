@@ -1,8 +1,8 @@
 <?php
 
-namespace Xiaoler\Blade\Engines;
+namespace luoyy\Blade\Contracts\View;
 
-interface EngineInterface
+interface Engine
 {
     /**
      * Get the evaluated contents of the view.

@@ -1,6 +1,6 @@
 <?php
 
-namespace Xiaoler\Blade\Engines;
+namespace luoyy\Blade\Engines;
 
 use Closure;
 use InvalidArgumentException;
@@ -38,10 +38,10 @@ class EngineResolver
     }
 
     /**
-     * Resolver an engine instance by name.
+     * Resolve an engine instance by name.
      *
      * @param  string  $engine
-     * @return \Xiaoler\Blade\Engines\EngineInterface
+     * @return \Illuminate\Contracts\View\Engine
      * @throws \InvalidArgumentException
      */
     public function resolve($engine)

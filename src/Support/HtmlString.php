@@ -1,8 +1,10 @@
 <?php
 
-namespace Xiaoler\Blade\Support;
+namespace luoyy\Blade\Support;
 
-class HtmlString
+use luoyy\Blade\Contracts\Support\Htmlable;
+
+class HtmlString implements Htmlable
 {
     /**
      * The HTML string.

@@ -1,12 +1,12 @@
 <?php
 
-namespace Xiaoler\Blade;
+namespace luoyy\Blade;
 
-use Xiaoler\Blade\Support\Arr;
-use Xiaoler\Blade\Support\Str;
+use luoyy\Blade\Support\Arr;
+use luoyy\Blade\Support\Str;
 use InvalidArgumentException;
-use Xiaoler\Blade\Contracts\Arrayable;
-use Xiaoler\Blade\Engines\EngineResolver;
+use luoyy\Blade\Contracts\Support\Arrayable;
+use luoyy\Blade\Engines\EngineResolver;
 
 class Factory
 {
@@ -18,14 +18,14 @@ class Factory
     /**
      * The engine implementation.
      *
-     * @var \Xiaoler\Blade\Engines\EngineResolver
+     * @var \luoyy\Blade\Engines\EngineResolver
      */
     protected $engines;
 
     /**
      * The view finder implementation.
      *
-     * @var \Xiaoler\Blade\ViewFinderInterface
+     * @var \luoyy\Blade\ViewFinderInterface
      */
     protected $finder;
 
@@ -57,8 +57,8 @@ class Factory
     /**
      * Create a new view factory instance.
      *
-     * @param  \Xiaoler\Blade\Engines\EngineResolver  $engines
-     * @param  \Xiaoler\Blade\ViewFinderInterface  $finder
+     * @param  \luoyy\Blade\Engines\EngineResolver  $engines
+     * @param  \luoyy\Blade\ViewFinderInterface  $finder
      * @return void
      */
     public function __construct(EngineResolver $engines, ViewFinderInterface $finder)
@@ -75,7 +75,7 @@ class Factory
      * @param  string  $path
      * @param  array   $data
      * @param  array   $mergeData
-     * @return \Xiaoler\Blade\View
+     * @return \luoyy\Blade\View
      */
     public function file($path, $data = [], $mergeData = [])
     {
@@ -90,7 +90,7 @@ class Factory
      * @param  string  $view
      * @param  array   $data
      * @param  array   $mergeData
-     * @return \Xiaoler\Blade\View
+     * @return \luoyy\Blade\View
      */
     public function make($view, $data = [], $mergeData = [])
     {
@@ -188,7 +188,7 @@ class Factory
      * @param  string  $view
      * @param  string  $path
      * @param  array  $data
-     * @return \Xiaoler\Blade\View
+     * @return \luoyy\Blade\View
      */
     protected function viewInstance($view, $path, $data)
     {
@@ -216,7 +216,7 @@ class Factory
      * Get the appropriate view engine for the given path.
      *
      * @param  string  $path
-     * @return \Xiaoler\Blade\Engines\EngineInterface
+     * @return \luoyy\Blade\Engines\EngineInterface
      *
      * @throws \InvalidArgumentException
      */
@@ -406,7 +406,7 @@ class Factory
     /**
      * Get the engine resolver instance.
      *
-     * @return \Xiaoler\Blade\Engines\EngineResolver
+     * @return \luoyy\Blade\Engines\EngineResolver
      */
     public function getEngineResolver()
     {
@@ -416,7 +416,7 @@ class Factory
     /**
      * Get the view finder instance.
      *
-     * @return \Xiaoler\Blade\ViewFinderInterface
+     * @return \luoyy\Blade\ViewFinderInterface
      */
     public function getFinder()
     {
@@ -426,7 +426,7 @@ class Factory
     /**
      * Set the view finder instance.
      *
-     * @param  \Xiaoler\Blade\ViewFinderInterface  $finder
+     * @param  \luoyy\Blade\ViewFinderInterface  $finder
      * @return void
      */
     public function setFinder(ViewFinderInterface $finder)
