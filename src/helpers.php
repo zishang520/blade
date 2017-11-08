@@ -31,7 +31,7 @@ if (!function_exists('array_except')) {
     }
 }
 
-if (! function_exists('value')) {
+if (!function_exists('value')) {
     /**
      * Return the default value of the given value.
      *
@@ -44,7 +44,7 @@ if (! function_exists('value')) {
     }
 }
 
-if (! function_exists('tap')) {
+if (!function_exists('tap')) {
     /**
      * Call the given Closure with the given value then return the value.
      *
@@ -57,5 +57,18 @@ if (! function_exists('tap')) {
         $callback($value);
 
         return $value;
+    }
+}
+
+if (!function_exists('last')) {
+    /**
+     * Get the last element from an array.
+     *
+     * @param  array  $array
+     * @return mixed
+     */
+    function last($array)
+    {
+        return end($array);
     }
 }
