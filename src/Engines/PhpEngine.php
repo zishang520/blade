@@ -58,7 +58,7 @@ class PhpEngine implements Engine
      *
      * @throws \Exception
      */
-    protected function handleViewException(Exception $e, $obLevel)
+    protected function handleViewException($e, $obLevel)
     {
         while (ob_get_level() > $obLevel) {
             ob_end_clean();

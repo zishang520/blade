@@ -2,6 +2,8 @@
 
 namespace luoyy\Blade;
 
+use luoyy\Blade\ViewFinderInterface;
+
 class ViewName
 {
     /**

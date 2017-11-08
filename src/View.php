@@ -10,6 +10,7 @@ use luoyy\Blade\Contracts\Support\MessageProvider;
 use luoyy\Blade\Contracts\Support\Renderable;
 use luoyy\Blade\Contracts\View\Engine;
 use luoyy\Blade\Contracts\View\View as ViewContract;
+use luoyy\Blade\Factory;
 use luoyy\Blade\Support\MessageBag;
 use luoyy\Blade\Support\Str;
 use Throwable;
@@ -199,7 +200,7 @@ class View implements ArrayAccess, ViewContract
     /**
      * Add validation errors to the view.
      *
-     * @param  \Illuminate\Contracts\Support\MessageProvider|array  $provider
+     * @param  \luoyy\Blade\Contracts\Support\MessageProvider|array  $provider
      * @return $this
      */
     public function withErrors($provider)
@@ -212,7 +213,7 @@ class View implements ArrayAccess, ViewContract
     /**
      * Format the given message provider into a MessageBag.
      *
-     * @param  \Illuminate\Contracts\Support\MessageProvider|array  $provider
+     * @param  \luoyy\Blade\Contracts\Support\MessageProvider|array  $provider
      * @return \Illuminate\Support\MessageBag
      */
     protected function formatErrors($provider)
