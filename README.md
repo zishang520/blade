@@ -14,15 +14,15 @@ composer require luoyy/blade
 If you haven't use composer, you should add all the files in folder `src` to your project folder,
 and then `require` them in your code.
 
+If you need to run on php5, switch to the php5 branch
+
 
 ### Usage
 
 ```php
 <?php
 
-require '../src/Autoloader.php';
-
-luoyy\Blade\Autoloader::register();
+require './vendor/autoload.php';
 
 use luoyy\Blade\FileViewFinder;
 use luoyy\Blade\Factory;
