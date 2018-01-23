@@ -42,24 +42,6 @@ interface Factory
     public function share($key, $value = null);
 
     /**
-     * Register a view composer event.
-     *
-     * @param  array|string  $views
-     * @param  \Closure|string  $callback
-     * @return array
-     */
-    public function composer($views, $callback);
-
-    /**
-     * Register a view creator event.
-     *
-     * @param  array|string  $views
-     * @param  \Closure|string  $callback
-     * @return array
-     */
-    public function creator($views, $callback);
-
-    /**
      * Add a new namespace to the loader.
      *
      * @param  string  $namespace

@@ -165,8 +165,8 @@ trait ManagesLayouts
      */
     public static function parentPlaceholder($section = '')
     {
-        if (! isset(static::$parentPlaceholder[$section])) {
-            static::$parentPlaceholder[$section] = '##parent-placeholder-'.sha1($section).'##';
+        if (!isset(static::$parentPlaceholder[$section])) {
+            static::$parentPlaceholder[$section] = '##parent-placeholder-' . sha1($section) . '##';
         }
 
         return static::$parentPlaceholder[$section];

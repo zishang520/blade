@@ -113,7 +113,7 @@ trait ManagesComponents
         );
 
         $this->slots[$this->currentComponent()]
-                    [$currentSlot] = new HtmlString(trim(ob_get_clean()));
+        [$currentSlot] = new HtmlString(trim(ob_get_clean()));
     }
 
     /**

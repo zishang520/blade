@@ -10,7 +10,7 @@ class FileViewFinder implements ViewFinderInterface
     /**
      * The filesystem instance.
      *
-     * @var \luoyy\Blade\Filesystem
+     * @var \Illuminate\Filesystem\Filesystem
      */
     protected $files;
 
@@ -45,7 +45,7 @@ class FileViewFinder implements ViewFinderInterface
     /**
      * Create a new file view loader instance.
      *
-     * @param  \luoyy\Blade\Filesystem  $files
+     * @param  \Illuminate\Filesystem\Filesystem  $files
      * @param  array  $paths
      * @param  array  $extensions
      * @return void
@@ -108,7 +108,7 @@ class FileViewFinder implements ViewFinderInterface
             throw new InvalidArgumentException("View [$name] has an invalid name.");
         }
 
-        if (! isset($this->hints[$segments[0]])) {
+        if (!isset($this->hints[$segments[0]])) {
             throw new InvalidArgumentException("No hint path defined for [{$segments[0]}].");
         }
 
@@ -128,7 +128,7 @@ class FileViewFinder implements ViewFinderInterface
     {
         foreach ((array) $paths as $path) {
             foreach ($this->getPossibleViewFiles($name) as $file) {
-                if ($this->files->exists($viewPath = $path.'/'.$file)) {
+                if ($this->files->exists($viewPath = $path . '/' . $file)) {
                     return $viewPath;
                 }
             }
@@ -146,7 +146,7 @@ class FileViewFinder implements ViewFinderInterface
     protected function getPossibleViewFiles($name)
     {
         return array_map(function ($extension) use ($name) {
-            return str_replace('.', '/', $name).'.'.$extension;
+            return str_replace('.', '/', $name) . '.' . $extension;
         }, $this->extensions);
     }
 
@@ -259,7 +259,7 @@ class FileViewFinder implements ViewFinderInterface
     /**
      * Get the filesystem instance.
      *
-     * @return \luoyy\Blade\Filesystem
+     * @return \Illuminate\Filesystem\Filesystem
      */
     public function getFilesystem()
     {

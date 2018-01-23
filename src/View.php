@@ -20,14 +20,14 @@ class View implements ArrayAccess, ViewContract
     /**
      * The view factory instance.
      *
-     * @var \luoyy\Blade\Factory
+     * @var \Illuminate\View\Factory
      */
     protected $factory;
 
     /**
      * The engine implementation.
      *
-     * @var \luoyy\Blade\Contracts\View\Engine
+     * @var \Illuminate\Contracts\View\Engine
      */
     protected $engine;
 
@@ -55,8 +55,8 @@ class View implements ArrayAccess, ViewContract
     /**
      * Create a new view instance.
      *
-     * @param  \luoyy\Blade\Factory  $factory
-     * @param  \luoyy\Blade\Contracts\View\Engine  $engine
+     * @param  \Illuminate\View\Factory  $factory
+     * @param  \Illuminate\Contracts\View\Engine  $engine
      * @param  string  $view
      * @param  string  $path
      * @param  mixed  $data
@@ -157,7 +157,7 @@ class View implements ArrayAccess, ViewContract
     /**
      * Get the sections of the rendered view.
      *
-     * @return array
+     * @return string
      */
     public function renderSections()
     {
@@ -200,7 +200,7 @@ class View implements ArrayAccess, ViewContract
     /**
      * Add validation errors to the view.
      *
-     * @param  \luoyy\Blade\Contracts\Support\MessageProvider|array  $provider
+     * @param  \Illuminate\Contracts\Support\MessageProvider|array  $provider
      * @return $this
      */
     public function withErrors($provider)
@@ -213,7 +213,7 @@ class View implements ArrayAccess, ViewContract
     /**
      * Format the given message provider into a MessageBag.
      *
-     * @param  \luoyy\Blade\Contracts\Support\MessageProvider|array  $provider
+     * @param  \Illuminate\Contracts\Support\MessageProvider|array  $provider
      * @return \Illuminate\Support\MessageBag
      */
     protected function formatErrors($provider)
@@ -276,7 +276,7 @@ class View implements ArrayAccess, ViewContract
     /**
      * Get the view factory instance.
      *
-     * @return \luoyy\Blade\Factory
+     * @return \Illuminate\View\Factory
      */
     public function getFactory()
     {
@@ -286,7 +286,7 @@ class View implements ArrayAccess, ViewContract
     /**
      * Get the view's rendering engine.
      *
-     * @return \luoyy\Blade\Contracts\View\Engine
+     * @return \Illuminate\Contracts\View\Engine
      */
     public function getEngine()
     {
@@ -388,7 +388,7 @@ class View implements ArrayAccess, ViewContract
      *
      * @param  string  $method
      * @param  array   $parameters
-     * @return \luoyy\Blade\View
+     * @return \Illuminate\View\View
      *
      * @throws \BadMethodCallException
      */

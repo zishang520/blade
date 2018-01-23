@@ -1,22 +1,23 @@
 <?php
- 
+
 namespace luoyy\Blade\Compilers;
 
+use luoyy\Blade\Compilers\CompilerInterface;
 use luoyy\Blade\Support\Arr;
 use luoyy\Blade\Support\Str;
 
 class BladeCompiler extends Compiler implements CompilerInterface
 {
     use Concerns\CompilesComments,
-        Concerns\CompilesComponents,
-        Concerns\CompilesConditionals,
-        Concerns\CompilesEchos,
-        Concerns\CompilesIncludes,
-        Concerns\CompilesJson,
-        Concerns\CompilesLayouts,
-        Concerns\CompilesLoops,
-        Concerns\CompilesRawPhp,
-        Concerns\CompilesStacks;
+    Concerns\CompilesComponents,
+    Concerns\CompilesConditionals,
+    Concerns\CompilesEchos,
+    Concerns\CompilesIncludes,
+    Concerns\CompilesJson,
+    Concerns\CompilesLayouts,
+    Concerns\CompilesLoops,
+    Concerns\CompilesRawPhp,
+    Concerns\CompilesStacks;
 
     /**
      * All of the registered extensions.
@@ -94,14 +95,7 @@ class BladeCompiler extends Compiler implements CompilerInterface
     protected $footer = [];
 
     /**
-     * Placeholder to temporary mark the position of verbatim blocks.
-     *
-     * @var string
-     */
-    protected $rawPlaceholder = '@__verbatim__@';
-
-    /**
-     * Array to temporary store the verbatim blocks found in the template.
+     * Array to temporary store the raw blocks found in the template.
      *
      * @var array
      */
@@ -119,7 +113,7 @@ class BladeCompiler extends Compiler implements CompilerInterface
             $this->setPath($path);
         }
 
-        if (! is_null($this->cachePath)) {
+        if (!is_null($this->cachePath)) {
             $contents = $this->compileString($this->files->get($this->getPath()));
 
             $this->files->put($this->getCompiledPath($this->getPath()), $contents);
@@ -174,7 +168,7 @@ class BladeCompiler extends Compiler implements CompilerInterface
             $result .= is_array($token) ? $this->parseToken($token) : $token;
         }
 
-        if (! empty($this->rawBlocks)) {
+        if (!empty($this->rawBlocks)) {
             $result = $this->restoreRawContent($result);
         }
 
@@ -197,9 +191,7 @@ class BladeCompiler extends Compiler implements CompilerInterface
     protected function storeVerbatimBlocks($value)
     {
         return preg_replace_callback('/(?<!@)@verbatim(.*?)@endverbatim/s', function ($matches) {
-            $this->rawBlocks[] = $matches[1];
-
-            return $this->rawPlaceholder;
+            return $this->storeRawBlock($matches[1]);
         }, $value);
     }
 
@@ -212,10 +204,21 @@ class BladeCompiler extends Compiler implements CompilerInterface
     protected function storePhpBlocks($value)
     {
         return preg_replace_callback('/(?<!@)@php(.*?)@endphp/s', function ($matches) {
-            $this->rawBlocks[] = "<?php{$matches[1]}?>";
-
-            return $this->rawPlaceholder;
+            return $this->storeRawBlock("<?php{$matches[1]}?>");
         }, $value);
+    }
+
+    /**
+     * Store a raw block and return a unique raw placeholder.
+     *
+     * @param  string  $value
+     * @return string
+     */
+    protected function storeRawBlock($value)
+    {
+        return $this->getRawPlaceholder(
+            array_push($this->rawBlocks, $value) - 1
+        );
     }
 
     /**
@@ -226,13 +229,24 @@ class BladeCompiler extends Compiler implements CompilerInterface
      */
     protected function restoreRawContent($result)
     {
-        $result = preg_replace_callback('/'.preg_quote($this->rawPlaceholder).'/', function () {
-            return array_shift($this->rawBlocks);
+        $result = preg_replace_callback('/' . $this->getRawPlaceholder('(\d+)') . '/', function ($matches) {
+            return $this->rawBlocks[$matches[1]];
         }, $result);
 
         $this->rawBlocks = [];
 
         return $result;
+    }
+
+    /**
+     * Get a placeholder to temporary mark the position of raw blocks.
+     *
+     * @param  int|string  $replace
+     * @return string
+     */
+    protected function getRawPlaceholder($replace)
+    {
+        return str_replace('#', $replace, '@__raw_block_#__@');
     }
 
     /**
@@ -244,7 +258,7 @@ class BladeCompiler extends Compiler implements CompilerInterface
     protected function addFooters($result)
     {
         return ltrim($result, PHP_EOL)
-                .PHP_EOL.implode(PHP_EOL, array_reverse($this->footer));
+        . PHP_EOL . implode(PHP_EOL, array_reverse($this->footer));
     }
 
     /**
@@ -305,14 +319,14 @@ class BladeCompiler extends Compiler implements CompilerInterface
     protected function compileStatement($match)
     {
         if (Str::contains($match[1], '@')) {
-            $match[0] = isset($match[3]) ? $match[1].$match[3] : $match[1];
+            $match[0] = isset($match[3]) ? $match[1] . $match[3] : $match[1];
         } elseif (isset($this->customDirectives[$match[1]])) {
             $match[0] = $this->callCustomDirective($match[1], Arr::get($match, 3));
-        } elseif (method_exists($this, $method = 'compile'.ucfirst($match[1]))) {
+        } elseif (method_exists($this, $method = 'compile' . ucfirst($match[1]))) {
             $match[0] = $this->$method(Arr::get($match, 3));
         }
 
-        return isset($match[3]) ? $match[0] : $match[0].$match[2];
+        return isset($match[3]) ? $match[0] : $match[0] . $match[2];
     }
 
     /**
@@ -368,6 +382,18 @@ class BladeCompiler extends Compiler implements CompilerInterface
     }
 
     /**
+     * Check the result of a condition.
+     *
+     * @param  string  $name
+     * @param  array  $parameters
+     * @return bool
+     */
+    public function check($name, ...$parameters)
+    {
+        return call_user_func($this->conditions[$name], ...$parameters);
+    }
+
+    /**
      * Register a handler for custom directives.
      *
      * @param  string  $name
@@ -398,5 +424,15 @@ class BladeCompiler extends Compiler implements CompilerInterface
     public function setEchoFormat($format)
     {
         $this->echoFormat = $format;
+    }
+
+    /**
+     * Set the echo format to double encode entities.
+     *
+     * @return void
+     */
+    public function doubleEncode()
+    {
+        $this->setEchoFormat('e(%s, true)');
     }
 }

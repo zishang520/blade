@@ -44,7 +44,7 @@ trait CompilesEchos
         $pattern = sprintf('/(@)?%s\s*(.+?)\s*%s(\r?\n)?/s', $this->rawTags[0], $this->rawTags[1]);
 
         $callback = function ($matches) {
-            $whitespace = empty($matches[3]) ? '' : $matches[3].$matches[3];
+            $whitespace = empty($matches[3]) ? '' : $matches[3] . $matches[3];
 
             return $matches[1] ? substr($matches[0], 1) : "<?php echo {$this->compileEchoDefaults($matches[2])}; ?>{$whitespace}";
         };
@@ -63,7 +63,7 @@ trait CompilesEchos
         $pattern = sprintf('/(@)?%s\s*(.+?)\s*%s(\r?\n)?/s', $this->contentTags[0], $this->contentTags[1]);
 
         $callback = function ($matches) {
-            $whitespace = empty($matches[3]) ? '' : $matches[3].$matches[3];
+            $whitespace = empty($matches[3]) ? '' : $matches[3] . $matches[3];
 
             $wrapped = sprintf($this->echoFormat, $this->compileEchoDefaults($matches[2]));
 
@@ -84,7 +84,7 @@ trait CompilesEchos
         $pattern = sprintf('/(@)?%s\s*(.+?)\s*%s(\r?\n)?/s', $this->escapedTags[0], $this->escapedTags[1]);
 
         $callback = function ($matches) {
-            $whitespace = empty($matches[3]) ? '' : $matches[3].$matches[3];
+            $whitespace = empty($matches[3]) ? '' : $matches[3] . $matches[3];
 
             return $matches[1] ? $matches[0] : "<?php echo e({$this->compileEchoDefaults($matches[2])}); ?>{$whitespace}";
         };
@@ -100,6 +100,6 @@ trait CompilesEchos
      */
     public function compileEchoDefaults($value)
     {
-        return preg_replace('/^(?=\$)(.+?)(?:\s+or\s+)(.+?)$/s', 'isset($1) ? $1 : $2', $value);
+        return preg_replace('/^(?=\$)(.+?)(?:\s+or\s+)(.+?)$/si', 'isset($1) ? $1 : $2', $value);
     }
 }

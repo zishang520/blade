@@ -4,6 +4,7 @@ namespace luoyy\Blade\Engines;
 
 use Exception;
 use luoyy\Blade\Contracts\View\Engine;
+use luoyy\Blade\Exception\FatalThrowableError;
 use Throwable;
 
 class PhpEngine implements Engine
@@ -43,7 +44,7 @@ class PhpEngine implements Engine
         } catch (Exception $e) {
             $this->handleViewException($e, $obLevel);
         } catch (Throwable $e) {
-            $this->handleViewException($e, $obLevel);
+            $this->handleViewException(new FatalThrowableError($e), $obLevel);
         }
 
         return ltrim(ob_get_clean());
@@ -58,7 +59,7 @@ class PhpEngine implements Engine
      *
      * @throws \Exception
      */
-    protected function handleViewException($e, $obLevel)
+    protected function handleViewException(Exception $e, $obLevel)
     {
         while (ob_get_level() > $obLevel) {
             ob_end_clean();

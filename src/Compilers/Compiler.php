@@ -10,7 +10,7 @@ abstract class Compiler
     /**
      * The Filesystem instance.
      *
-     * @var \luoyy\Blade\Filesystem
+     * @var \Illuminate\Filesystem\Filesystem
      */
     protected $files;
 
@@ -24,7 +24,7 @@ abstract class Compiler
     /**
      * Create a new compiler instance.
      *
-     * @param  \luoyy\Blade\Filesystem  $files
+     * @param  \Illuminate\Filesystem\Filesystem  $files
      * @param  string  $cachePath
      * @return void
      *
@@ -32,7 +32,7 @@ abstract class Compiler
      */
     public function __construct(Filesystem $files, $cachePath)
     {
-        if (! $cachePath) {
+        if (!$cachePath) {
             throw new InvalidArgumentException('Please provide a valid cache path.');
         }
 
@@ -48,7 +48,7 @@ abstract class Compiler
      */
     public function getCompiledPath($path)
     {
-        return $this->cachePath.'/'.sha1($path).'.php';
+        return $this->cachePath . '/' . sha1($path) . '.php';
     }
 
     /**
@@ -64,11 +64,11 @@ abstract class Compiler
         // If the compiled file doesn't exist we will indicate that the view is expired
         // so that it can be re-compiled. Else, we will verify the last modification
         // of the views is less than the modification times of the compiled views.
-        if (! $this->files->exists($compiled)) {
+        if (!$this->files->exists($compiled)) {
             return true;
         }
 
         return $this->files->lastModified($path) >=
-               $this->files->lastModified($compiled);
+        $this->files->lastModified($compiled);
     }
 }

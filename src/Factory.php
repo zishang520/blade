@@ -2,32 +2,42 @@
 
 namespace luoyy\Blade;
 
+use InvalidArgumentException;
+use luoyy\Blade\Contracts\Container\Container;
+use luoyy\Blade\Contracts\Support\Arrayable;
+use luoyy\Blade\Contracts\View\Factory as FactoryContract;
+use luoyy\Blade\Engines\EngineResolver;
 use luoyy\Blade\Support\Arr;
 use luoyy\Blade\Support\Str;
-use InvalidArgumentException;
-use luoyy\Blade\Contracts\Support\Arrayable;
-use luoyy\Blade\Engines\EngineResolver;
+use luoyy\Blade\ViewFinderInterface;
 
-class Factory
+class Factory implements FactoryContract
 {
     use Concerns\ManagesComponents,
-        Concerns\ManagesLayouts,
-        Concerns\ManagesLoops,
-        Concerns\ManagesStacks;
+    Concerns\ManagesLayouts,
+    Concerns\ManagesLoops,
+    Concerns\ManagesStacks;
 
     /**
      * The engine implementation.
      *
-     * @var \luoyy\Blade\Engines\EngineResolver
+     * @var \Illuminate\View\Engines\EngineResolver
      */
     protected $engines;
 
     /**
      * The view finder implementation.
      *
-     * @var \luoyy\Blade\ViewFinderInterface
+     * @var \Illuminate\View\ViewFinderInterface
      */
     protected $finder;
+
+    /**
+     * The IoC container instance.
+     *
+     * @var \Illuminate\Contracts\Container\Container
+     */
+    protected $container;
 
     /**
      * Data that should be available to all templates.
@@ -48,6 +58,13 @@ class Factory
     ];
 
     /**
+     * The view composer events.
+     *
+     * @var array
+     */
+    protected $composers = [];
+
+    /**
      * The number of active rendering operations.
      *
      * @var int
@@ -57,8 +74,8 @@ class Factory
     /**
      * Create a new view factory instance.
      *
-     * @param  \luoyy\Blade\Engines\EngineResolver  $engines
-     * @param  \luoyy\Blade\ViewFinderInterface  $finder
+     * @param  \Illuminate\View\Engines\EngineResolver  $engines
+     * @param  \Illuminate\View\ViewFinderInterface  $finder
      * @return void
      */
     public function __construct(EngineResolver $engines, ViewFinderInterface $finder)
@@ -75,7 +92,7 @@ class Factory
      * @param  string  $path
      * @param  array   $data
      * @param  array   $mergeData
-     * @return \luoyy\Blade\View
+     * @return \Illuminate\Contracts\View\View
      */
     public function file($path, $data = [], $mergeData = [])
     {
@@ -90,7 +107,7 @@ class Factory
      * @param  string  $view
      * @param  array   $data
      * @param  array   $mergeData
-     * @return \luoyy\Blade\View
+     * @return \Illuminate\Contracts\View\View
      */
     public function make($view, $data = [], $mergeData = [])
     {
@@ -107,6 +124,27 @@ class Factory
     }
 
     /**
+     * Get the first view that actually exists from the given list.
+     *
+     * @param  array  $views
+     * @param  array   $data
+     * @param  array   $mergeData
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function first(array $views, $data = [], $mergeData = [])
+    {
+        $view = collect($views)->first(function ($view) {
+            return $this->exists($view);
+        });
+
+        if (!$view) {
+            throw new InvalidArgumentException('None of the views in the given array exist.');
+        }
+
+        return $this->make($view, $data, $mergeData);
+    }
+
+    /**
      * Get the rendered content of the view based on a given condition.
      *
      * @param  bool  $condition
@@ -117,7 +155,7 @@ class Factory
      */
     public function renderWhen($condition, $view, $data = [], $mergeData = [])
     {
-        if (! $condition) {
+        if (!$condition) {
             return '';
         }
 
@@ -153,8 +191,8 @@ class Factory
         // with "raw|" for convenience and to let this know that it is a string.
         else {
             $result = Str::startsWith($empty, 'raw|')
-                        ? substr($empty, 4)
-                        : $this->make($empty)->render();
+            ? substr($empty, 4)
+            : $this->make($empty)->render();
         }
 
         return $result;
@@ -188,7 +226,7 @@ class Factory
      * @param  string  $view
      * @param  string  $path
      * @param  array  $data
-     * @return \luoyy\Blade\View
+     * @return \Illuminate\Contracts\View\View
      */
     protected function viewInstance($view, $path, $data)
     {
@@ -216,13 +254,13 @@ class Factory
      * Get the appropriate view engine for the given path.
      *
      * @param  string  $path
-     * @return \luoyy\Blade\Engines\EngineInterface
+     * @return \Illuminate\Contracts\View\Engine
      *
      * @throws \InvalidArgumentException
      */
     public function getEngineFromPath($path)
     {
-        if (! $extension = $this->getExtension($path)) {
+        if (!$extension = $this->getExtension($path)) {
             throw new InvalidArgumentException("Unrecognized extension in file: $path");
         }
 
@@ -242,7 +280,7 @@ class Factory
         $extensions = array_keys($this->extensions);
 
         return Arr::first($extensions, function ($value) use ($path) {
-            return Str::endsWith($path, '.'.$value);
+            return Str::endsWith($path, '.' . $value);
         });
     }
 
@@ -406,7 +444,7 @@ class Factory
     /**
      * Get the engine resolver instance.
      *
-     * @return \luoyy\Blade\Engines\EngineResolver
+     * @return \Illuminate\View\Engines\EngineResolver
      */
     public function getEngineResolver()
     {
@@ -416,7 +454,7 @@ class Factory
     /**
      * Get the view finder instance.
      *
-     * @return \luoyy\Blade\ViewFinderInterface
+     * @return \Illuminate\View\ViewFinderInterface
      */
     public function getFinder()
     {
@@ -426,7 +464,7 @@ class Factory
     /**
      * Set the view finder instance.
      *
-     * @param  \luoyy\Blade\ViewFinderInterface  $finder
+     * @param  \Illuminate\View\ViewFinderInterface  $finder
      * @return void
      */
     public function setFinder(ViewFinderInterface $finder)
@@ -442,6 +480,27 @@ class Factory
     public function flushFinderCache()
     {
         $this->getFinder()->flush();
+    }
+
+    /**
+     * Get the IoC container instance.
+     *
+     * @return \Illuminate\Contracts\Container\Container
+     */
+    public function getContainer()
+    {
+        return $this->container;
+    }
+
+    /**
+     * Set the IoC container instance.
+     *
+     * @param  \Illuminate\Contracts\Container\Container  $container
+     * @return void
+     */
+    public function setContainer(Container $container)
+    {
+        $this->container = $container;
     }
 
     /**
