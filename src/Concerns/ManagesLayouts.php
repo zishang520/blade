@@ -192,7 +192,7 @@ trait ManagesLayouts
      */
     public function getSection($name, $default = null)
     {
-        return $this->getSections()[$name] ?? $default;
+        return isset($this->sections[$name]) ? $this->sections[$name] : $default;
     }
 
     /**
