@@ -1,5 +1,4 @@
 <?php
-
 namespace luoyy\Blade;
 
 class Autoloader
@@ -24,7 +23,8 @@ class Autoloader
         if (0 !== strpos($class, __NAMESPACE__)) {
             return;
         }
-        if (is_file($file = dirname(__FILE__) . '/' . str_replace('\\', '/', substr($class, 13)) . '.php')) {
+        // psr-4
+        if (is_file($file = strtr($class, ['luoyy\\Blade\\' => __DIR__ . DIRECTORY_SEPARATOR]) . '.php')) {
             require $file;
         }
     }
