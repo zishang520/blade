@@ -92,9 +92,7 @@ class Factory implements FactoryContract
     {
         $data = array_merge($mergeData, $this->parseData($data));
 
-        return tap($this->viewInstance($path, $path, $data), function ($view) {
-            $this->callCreator($view);
-        });
+        return $this->viewInstance($path, $path, $data);
     }
 
     /**
