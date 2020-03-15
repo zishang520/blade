@@ -7,6 +7,7 @@ use luoyy\Blade\Support\Blade;
 use luoyy\Blade\Compilers\CompilerInterface;
 use luoyy\Blade\Factory;
 use luoyy\Blade\Support\Arr;
+use luoyy\Blade\Support\Collection;
 use luoyy\Blade\Support\Str;
 
 class BladeCompiler extends Compiler implements CompilerInterface
@@ -176,7 +177,7 @@ class BladeCompiler extends Compiler implements CompilerInterface
      */
     protected function getOpenAndClosingPhpTokens($contents)
     {
-        return collect(token_get_all($contents))
+        return (new Collection(token_get_all($contents)))
             ->pluck(0)
             ->filter(function ($token) {
                 return in_array($token, [T_OPEN_TAG, T_OPEN_TAG_WITH_ECHO, T_CLOSE_TAG]);
@@ -529,7 +530,7 @@ class BladeCompiler extends Compiler implements CompilerInterface
     {
         if (is_null($alias)) {
             $alias = Str::contains($class, '\\View\\Components\\')
-                ? collect(explode('\\', Str::after($class, '\\View\\Components\\')))->map(function ($segment) {
+                ? (new Collection(explode('\\', Str::after($class, '\\View\\Components\\'))))->map(function ($segment) {
                     return Str::kebab($segment);
                 })->implode(':')
                 : Str::kebab(class_basename($class));

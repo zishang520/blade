@@ -3,6 +3,7 @@ namespace luoyy\Blade\Compilers;
 
 use InvalidArgumentException;
 use luoyy\Blade\AnonymousComponent;
+use luoyy\Blade\Support\Collection;
 use luoyy\Blade\Support\Str;
 use ReflectionClass;
 
@@ -203,16 +204,16 @@ class ComponentTagCompiler
         // return all of the attributes as both data and attributes since we have
         // now way to partition them. The user can exclude attributes manually.
         if (!class_exists($class)) {
-            return [collect($attributes), collect($attributes)];
+            return [new Collection($attributes), new Collection($attributes)];
         }
 
         $constructor = (new ReflectionClass($class))->getConstructor();
 
         $parameterNames = $constructor
-        ? collect($constructor->getParameters())->map->getName()->all()
+        ? (new Collection($constructor->getParameters()))->map->getName()->all()
         : [];
 
-        return collect($attributes)->partition(function ($value, $key) use ($parameterNames) {
+        return (new Collection($attributes))->partition(function ($value, $key) use ($parameterNames) {
             return in_array(Str::camel($key), $parameterNames);
         });
     }
@@ -273,7 +274,7 @@ class ComponentTagCompiler
             return [];
         }
 
-        return collect($matches)->mapWithKeys(function ($match) {
+        return (new Collection($matches))->mapWithKeys(function ($match) {
             $attribute = $match['attribute'];
             $value = $match['value'] ?? null;
 
@@ -321,7 +322,7 @@ class ComponentTagCompiler
      */
     protected function attributesToString(array $attributes)
     {
-        return collect($attributes)
+        return (new Collection($attributes))
             ->map(function (string $value, string $attribute) {
                 return "'{$attribute}' => {$value}";
             })

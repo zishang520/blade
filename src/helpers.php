@@ -42,19 +42,6 @@ if (!function_exists('last')) {
     }
 }
 
-if (!function_exists('collect')) {
-    /**
-     * Create a collection from the given value.
-     *
-     * @param  mixed  $value
-     * @return \luoyy\Blade\Support\Collection
-     */
-    function collect($value = null)
-    {
-        return new Collection($value);
-    }
-}
-
 if (!function_exists('data_get')) {
     /**
      * Get an item from an array or object using "dot" notation.

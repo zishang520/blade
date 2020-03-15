@@ -2,6 +2,7 @@
 namespace luoyy\Blade;
 
 use Closure;
+use luoyy\Blade\Support\Collection;
 use luoyy\Blade\Support\Str;
 use ReflectionClass;
 use ReflectionMethod;
@@ -71,7 +72,7 @@ abstract class Component
         if (!isset(static::$propertyCache[$class])) {
             $reflection = new ReflectionClass($this);
 
-            static::$propertyCache[$class] = collect($reflection->getProperties(ReflectionProperty::IS_PUBLIC))
+            static::$propertyCache[$class] = (new Collection($reflection->getProperties(ReflectionProperty::IS_PUBLIC)))
                 ->reject(function (ReflectionProperty $property) {
                     return $this->shouldIgnore($property->getName());
                 })
@@ -101,7 +102,7 @@ abstract class Component
         if (!isset(static::$methodCache[$class])) {
             $reflection = new ReflectionClass($this);
 
-            static::$methodCache[$class] = collect($reflection->getMethods(ReflectionMethod::IS_PUBLIC))
+            static::$methodCache[$class] = (new Collection($reflection->getMethods(ReflectionMethod::IS_PUBLIC)))
                 ->reject(function (ReflectionMethod $method) {
                     return $this->shouldIgnore($method->getName());
                 })
