@@ -1,4 +1,5 @@
 <?php
+
 namespace luoyy\Blade\Compilers;
 
 use InvalidArgumentException;
@@ -489,9 +490,8 @@ class BladeCompiler extends Compiler implements CompilerInterface
      * @param  callable  $callback
      * @return void
      */
-    function if($name, callable $callback)
+    public function if($name, callable $callback)
     {
-        $name = sprintf('%s_%s', spl_object_id($this), $name);
         Blade::$conditions[$name] = $callback;
 
         $this->directive($name, function ($expression) use ($name) {

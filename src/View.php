@@ -116,8 +116,6 @@ class View implements ArrayAccess, Htmlable, ViewContract
         // clear out the sections for any separate views that may be rendered.
         $this->factory->incrementRender();
 
-        $this->factory->callComposer($this);
-
         $contents = $this->getContents();
 
         // Once we've finished rendering the view, we'll decrement the render count

@@ -701,7 +701,7 @@ trait EnumeratesValues
     /**
      * Collect the values into a collection.
      *
-     * @return \Illuminate\Support\Collection
+     * @return \luoyy\Blade\Support\Collection
      */
     public function collect()
     {

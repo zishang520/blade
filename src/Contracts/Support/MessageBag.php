@@ -22,7 +22,7 @@ interface MessageBag extends Arrayable
     /**
      * Merge a new array of messages into the bag.
      *
-     * @param  \Illuminate\Contracts\Support\MessageProvider|array  $messages
+     * @param  \luoyy\Blade\Contracts\Support\MessageProvider|array  $messages
      * @return $this
      */
     public function merge($messages);

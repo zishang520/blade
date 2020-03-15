@@ -62,7 +62,7 @@ class Collection implements ArrayAccess, Enumerable
     /**
      * Get a lazy collection for the items in this collection.
      *
-     * @return \Illuminate\Support\LazyCollection
+     * @return \luoyy\Blade\Support\LazyCollection
      */
     public function lazy()
     {
@@ -325,7 +325,7 @@ class Collection implements ArrayAccess, Enumerable
     /**
      * Get all items except for those with the specified keys.
      *
-     * @param  \Illuminate\Support\Collection|mixed  $keys
+     * @param  \luoyy\Blade\Support\Collection|mixed  $keys
      * @return static
      */
     public function except($keys)
@@ -1277,7 +1277,7 @@ class Collection implements ArrayAccess, Enumerable
     /**
      * Get a base Support collection instance from this collection.
      *
-     * @return \Illuminate\Support\Collection
+     * @return \luoyy\Blade\Support\Collection
      */
     public function toBase()
     {

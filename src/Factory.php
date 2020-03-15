@@ -116,9 +116,7 @@ class Factory implements FactoryContract
         // the caller for rendering or performing other view manipulations on this.
         $data = array_merge($mergeData, $this->parseData($data));
 
-        return tap($this->viewInstance($view, $path, $data), function ($view) {
-            $this->callCreator($view);
-        });
+        return $this->viewInstance($view, $path, $data);
     }
 
     /**
@@ -181,7 +179,8 @@ class Factory implements FactoryContract
         if (count($data) > 0) {
             foreach ($data as $key => $value) {
                 $result .= $this->make(
-                    $view, ['key' => $key, $iterator => $value]
+                    $view,
+                    ['key' => $key, $iterator => $value]
                 )->render();
             }
         }

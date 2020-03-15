@@ -6,7 +6,7 @@ use luoyy\Blade\Engines\EngineResolver;
 use luoyy\Blade\Engines\FileEngine;
 use luoyy\Blade\Engines\PhpEngine;
 use luoyy\Blade\Factory;
-use luoyy\Blade\Filesystem;
+use luoyy\Blade\Filesystem\Filesystem;
 use luoyy\Blade\FileViewFinder;
 
 $path = [__DIR__]; // your view file path, it's an array
@@ -18,6 +18,9 @@ $compiler = new BladeCompiler($file, $cachePath);
 // you can add a custom directive if you want
 $compiler->directive('datetime', function ($timestamp) {
     return preg_replace('/(\(\d+\))/', '<?php echo date("Y-m-d H:i:s", $1); ?>', $timestamp);
+});
+$compiler->if('env', function ($test) {
+    return $test == '123';
 });
 
 $resolver = new EngineResolver;

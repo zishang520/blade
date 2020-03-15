@@ -9,7 +9,7 @@ abstract class Compiler
     /**
      * The Filesystem instance.
      *
-     * @var \Illuminate\Filesystem\Filesystem
+     * @var \luoyy\Blade\Filesystem\Filesystem
      */
     protected $files;
 
@@ -23,7 +23,7 @@ abstract class Compiler
     /**
      * Create a new compiler instance.
      *
-     * @param  \Illuminate\Filesystem\Filesystem  $files
+     * @param  \luoyy\Blade\Filesystem\Filesystem  $files
      * @param  string  $cachePath
      * @return void
      *
