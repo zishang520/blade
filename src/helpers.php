@@ -16,24 +16,6 @@ if (!function_exists('e')) {
     }
 }
 
-if (!function_exists('array_except')) {
-    /**
-     * Get all of the given array except for a specified array of items.
-     *
-     * @param  array  $array
-     * @param  array|string  $keys
-     * @return array
-     */
-    function array_except($array, $keys)
-    {
-        foreach ((array) $keys as $key) {
-            unset($array[$key]);
-        }
-
-        return $array;
-    }
-}
-
 if (!function_exists('value')) {
     /**
      * Return the default value of the given value.

@@ -15,7 +15,6 @@ class BladeCompiler extends Compiler implements CompilerInterface
         Concerns\CompilesComponents,
         Concerns\CompilesConditionals,
         Concerns\CompilesEchos,
-        Concerns\CompilesErrors,
         Concerns\CompilesIncludes,
         Concerns\CompilesJson,
         Concerns\CompilesLayouts,
