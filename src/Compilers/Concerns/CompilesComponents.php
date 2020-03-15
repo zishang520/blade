@@ -28,10 +28,6 @@ trait CompilesComponents
 
         $hash = static::newComponentHash($component);
 
-        if (Str::contains($component, ['::class', '\\'])) {
-            return static::compileClassComponentOpening($component, $data, $hash);
-        }
-
         return "<?php \$__env->startComponent{$expression}; ?>";
     }
 
@@ -46,24 +42,6 @@ trait CompilesComponents
         static::$componentHashStack[] = $hash = sha1($component);
 
         return $hash;
-    }
-
-    /**
-     * Compile a class component opening.
-     *
-     * @param  string  $component
-     * @param  string  $data
-     * @param  string  $hash
-     * @return string
-     */
-    public static function compileClassComponentOpening(string $component, string $data, string $hash)
-    {
-        return implode(PHP_EOL, [
-            '<?php if (isset($component)) { $__componentOriginal' . $hash . ' = $component; } ?>',
-            '<?php $component = app()->make(' . Str::finish($component, '::class') . ', ' . ($data ?: '[]') . '); ?>',
-            '<?php if ($component->shouldRender()): ?>',
-            '<?php $__env->startComponent($component->resolveView(), $component->data()); ?>'
-        ]);
     }
 
     /**

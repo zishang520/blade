@@ -9,6 +9,12 @@
 </head>
 
 <body>
+    @component('alert', ['foo' => 'bar'])
+    ...
+@endcomponent
+    @alert
+    You are not allowed to access this resource!
+@endalert
     @env('local')
     // The application is in the local environment...
     @elseenv('testing')

@@ -9,6 +9,16 @@
 </head>
 
 <body>
+    <?php $__env->startComponent('alert', ['foo' => 'bar']); ?>
+    ...
+<?php if (isset($__componentOriginal8f1dba76b561684930a25a984046b3b4149785ca)): ?>
+<?php $component = $__componentOriginal8f1dba76b561684930a25a984046b3b4149785ca; ?>
+<?php unset($__componentOriginal8f1dba76b561684930a25a984046b3b4149785ca); ?>
+<?php endif; ?>
+<?php echo $__env->renderComponent(); ?>
+    @alert
+    You are not allowed to access this resource!
+@endalert
     <?php if (\luoyy\Blade\Support\Blade::check('env', 'local')): ?>
     // The application is in the local environment...
     <?php elseif (\luoyy\Blade\Support\Blade::check('env', 'testing')): ?>

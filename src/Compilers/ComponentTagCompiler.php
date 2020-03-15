@@ -1,13 +1,9 @@
 <?php
-
 namespace luoyy\Blade\Compilers;
 
-use luoyy\Blade\Container\Container;
-use luoyy\Blade\Contracts\Foundation\Application;
-use luoyy\Blade\Contracts\View\Factory;
-use luoyy\Blade\Support\Str;
-use luoyy\Blade\AnonymousComponent;
 use InvalidArgumentException;
+use luoyy\Blade\AnonymousComponent;
+use luoyy\Blade\Support\Str;
 use ReflectionClass;
 
 /**
@@ -138,7 +134,7 @@ class ComponentTagCompiler
         return preg_replace_callback($pattern, function (array $matches) {
             $attributes = $this->getAttributesFromAttributeString($matches['attributes']);
 
-            return $this->componentString($matches[1], $attributes)."\n@endcomponentClass";
+            return $this->componentString($matches[1], $attributes) . "\n@endcomponentClass";
         }, $value);
     }
 
@@ -162,10 +158,10 @@ class ComponentTagCompiler
         // If the component doesn't exists as a class we'll assume it's a class-less
         // component and pass the component as a view parameter to the data so it
         // can be accessed within the component and we can render out the view.
-        if (! class_exists($class)) {
+        if (!class_exists($class)) {
             $parameters = [
                 'view' => "'$class'",
-                'data' => '['.$this->attributesToString($data->all()).']',
+                'data' => '[' . $this->attributesToString($data->all()) . ']'
             ];
 
             $class = AnonymousComponent::class;
@@ -173,8 +169,8 @@ class ComponentTagCompiler
             $parameters = $data->all();
         }
 
-        return " @component('{$class}', [".$this->attributesToString($parameters).'])
-<?php $component->withAttributes(['.$this->attributesToString($attributes->all()).']); ?>';
+        return " @component('{$class}', [" . $this->attributesToString($parameters) . '])
+<?php $component->withAttributes([' . $this->attributesToString($attributes->all()) . ']); ?>';
     }
 
     /**
@@ -189,37 +185,9 @@ class ComponentTagCompiler
             return $this->aliases[$component];
         }
 
-        if (class_exists($class = $this->guessClassName($component))) {
-            return $class;
-        }
-
-        if (Container::getInstance()->make(Factory::class)
-                    ->exists($view = "components.{$component}")) {
-            return $view;
-        }
-
         throw new InvalidArgumentException(
             "Unable to locate a class or view for component [{$component}]."
         );
-    }
-
-    /**
-     * Guess the class name for the given component.
-     *
-     * @param  string  $component
-     * @return string
-     */
-    public function guessClassName(string $component)
-    {
-        $namespace = Container::getInstance()
-                    ->make(Application::class)
-                    ->getNamespace();
-
-        $componentPieces = array_map(function ($componentPiece) {
-            return ucfirst(Str::camel($componentPiece));
-        }, explode('.', $component));
-
-        return $namespace.'View\\Components\\'.implode('\\', $componentPieces);
     }
 
     /**
@@ -234,15 +202,15 @@ class ComponentTagCompiler
         // If the class doesn't exists, we'll assume it's a class-less component and
         // return all of the attributes as both data and attributes since we have
         // now way to partition them. The user can exclude attributes manually.
-        if (! class_exists($class)) {
+        if (!class_exists($class)) {
             return [collect($attributes), collect($attributes)];
         }
 
         $constructor = (new ReflectionClass($class))->getConstructor();
 
         $parameterNames = $constructor
-                    ? collect($constructor->getParameters())->map->getName()->all()
-                    : [];
+        ? collect($constructor->getParameters())->map->getName()->all()
+        : [];
 
         return collect($attributes)->partition(function ($value, $key) use ($parameterNames) {
             return in_array(Str::camel($key), $parameterNames);
@@ -269,7 +237,7 @@ class ComponentTagCompiler
     public function compileSlots(string $value)
     {
         $value = preg_replace_callback('/<\s*x[\-\:]slot\s+name=(?<name>(\"[^\"]+\"|\\\'[^\\\']+\\\'|[^\s>]+))\s*>/', function ($matches) {
-            return " @slot('".$this->stripQuotes($matches['name'])."') ";
+            return " @slot('" . $this->stripQuotes($matches['name']) . "') ";
         }, $value);
 
         return preg_replace('/<\/\s*x[\-\:]slot[^>]*>/', ' @endslot', $value);
@@ -301,7 +269,7 @@ class ComponentTagCompiler
             )?
         /x';
 
-        if (! preg_match_all($pattern, $attributeString, $matches, PREG_SET_ORDER)) {
+        if (!preg_match_all($pattern, $attributeString, $matches, PREG_SET_ORDER)) {
             return [];
         }
 
@@ -320,7 +288,7 @@ class ComponentTagCompiler
             if (Str::startsWith($attribute, 'bind:')) {
                 $attribute = Str::after($attribute, 'bind:');
             } else {
-                $value = "'".str_replace("'", "\\'", $value)."'";
+                $value = "'" . str_replace("'", "\\'", $value) . "'";
             }
 
             return [$attribute => $value];
@@ -354,10 +322,10 @@ class ComponentTagCompiler
     protected function attributesToString(array $attributes)
     {
         return collect($attributes)
-                ->map(function (string $value, string $attribute) {
-                    return "'{$attribute}' => {$value}";
-                })
-                ->implode(',');
+            ->map(function (string $value, string $attribute) {
+                return "'{$attribute}' => {$value}";
+            })
+            ->implode(',');
     }
 
     /**
@@ -366,7 +334,7 @@ class ComponentTagCompiler
     public function stripQuotes(string $value)
     {
         return Str::startsWith($value, ['"', '\''])
-                    ? substr($value, 1, -1)
-                    : $value;
+        ? substr($value, 1, -1)
+        : $value;
     }
 }

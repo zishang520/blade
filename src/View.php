@@ -24,7 +24,7 @@ class View implements ArrayAccess, Htmlable, ViewContract
     /**
      * The view factory instance.
      *
-     * @var \luoyy\Blade\View\Factory
+     * @var \luoyy\Blade\Factory
      */
     protected $factory;
 
@@ -59,7 +59,7 @@ class View implements ArrayAccess, Htmlable, ViewContract
     /**
      * Create a new view instance.
      *
-     * @param  \luoyy\Blade\View\Factory  $factory
+     * @param  \luoyy\Blade\Factory  $factory
      * @param  \luoyy\Blade\Contracts\View\Engine  $engine
      * @param  string  $view
      * @param  string  $path
@@ -280,7 +280,7 @@ class View implements ArrayAccess, Htmlable, ViewContract
     /**
      * Get the view factory instance.
      *
-     * @return \luoyy\Blade\View\Factory
+     * @return \luoyy\Blade\Factory
      */
     public function getFactory()
     {
@@ -392,7 +392,7 @@ class View implements ArrayAccess, Htmlable, ViewContract
      *
      * @param  string  $method
      * @param  array  $parameters
-     * @return \luoyy\Blade\View\View
+     * @return \luoyy\Blade\View
      *
      * @throws \BadMethodCallException
      */

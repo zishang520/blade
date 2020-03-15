@@ -5,6 +5,7 @@ namespace luoyy\Blade\Compilers;
 use InvalidArgumentException;
 use luoyy\Blade\Support\Blade;
 use luoyy\Blade\Compilers\CompilerInterface;
+use luoyy\Blade\Factory;
 use luoyy\Blade\Support\Arr;
 use luoyy\Blade\Support\Str;
 

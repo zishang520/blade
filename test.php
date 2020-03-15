@@ -22,7 +22,7 @@ $compiler->directive('datetime', function ($timestamp) {
 $compiler->if('env', function ($test) {
     return $test == '123';
 });
-
+$compiler->component('components.alert', 'alert');
 $resolver = new EngineResolver;
 $resolver->register('file', function () {
     return new FileEngine;
@@ -37,6 +37,7 @@ $finder = new FileViewFinder($file, $path);
 
 // get an instance of factory
 $factory = new Factory($resolver, $finder);
+
 // if your view file extension is not php or blade.php, use this to add it
 $factory->addExtension('tpl', 'blade');
 
