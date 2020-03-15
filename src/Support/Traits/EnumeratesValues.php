@@ -11,7 +11,6 @@ use luoyy\Blade\Support\Collection;
 use luoyy\Blade\Support\Enumerable;
 use luoyy\Blade\Support\HigherOrderCollectionProxy;
 use JsonSerializable;
-use Symfony\Component\VarDumper\VarDumper;
 use Traversable;
 
 /**
@@ -159,7 +158,7 @@ trait EnumeratesValues
         (new static(func_get_args()))
             ->push($this)
             ->each(function ($item) {
-                VarDumper::dump($item);
+                var_dump($item);
             });
 
         return $this;
