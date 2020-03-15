@@ -1,5 +1,4 @@
 <?php
-
 namespace luoyy\Blade\Support;
 
 use luoyy\Blade\Contracts\Support\Htmlable;

@@ -1,5 +1,4 @@
 <?php
-
 namespace luoyy\Blade\Contracts\Support;
 
 interface MessageProvider
@@ -7,7 +6,7 @@ interface MessageProvider
     /**
      * Get the messages for the instance.
      *
-     * @return \Illuminate\Contracts\Support\MessageBag
+     * @return \luoyy\Blade\Contracts\Support\MessageBag
      */
     public function getMessageBag();
 }

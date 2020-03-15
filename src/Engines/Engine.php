@@ -1,5 +1,4 @@
 <?php
-
 namespace luoyy\Blade\Engines;
 
 abstract class Engine

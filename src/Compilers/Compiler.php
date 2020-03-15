@@ -1,9 +1,8 @@
 <?php
-
 namespace luoyy\Blade\Compilers;
 
 use InvalidArgumentException;
-use luoyy\Blade\Filesystem;
+use luoyy\Blade\Filesystem\Filesystem;
 
 abstract class Compiler
 {

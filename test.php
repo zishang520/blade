@@ -1,9 +1,10 @@
 <?php
-include __DIR__ . DIRECTORY_SEPARATOR . 'src/Autoloader.php';
-luoyy\Blade\Autoloader::register();
+include __DIR__ . DIRECTORY_SEPARATOR . 'vendor/autoload.php';
 use luoyy\Blade\Compilers\BladeCompiler;
 use luoyy\Blade\Engines\CompilerEngine;
 use luoyy\Blade\Engines\EngineResolver;
+use luoyy\Blade\Engines\FileEngine;
+use luoyy\Blade\Engines\PhpEngine;
 use luoyy\Blade\Factory;
 use luoyy\Blade\Filesystem;
 use luoyy\Blade\FileViewFinder;
@@ -20,13 +21,19 @@ $compiler->directive('datetime', function ($timestamp) {
 });
 
 $resolver = new EngineResolver;
+$resolver->register('file', function () {
+    return new FileEngine;
+});
+$resolver->register('php', function () {
+    return new PhpEngine;
+});
 $resolver->register('blade', function () use ($compiler) {
     return new CompilerEngine($compiler);
 });
+$finder = new FileViewFinder($file, $path);
 
 // get an instance of factory
-$factory = new Factory($resolver, new FileViewFinder($file, $path));
-
+$factory = new Factory($resolver, $finder);
 // if your view file extension is not php or blade.php, use this to add it
 $factory->addExtension('tpl', 'blade');
 

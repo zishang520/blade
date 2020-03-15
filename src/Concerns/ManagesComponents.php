@@ -1,8 +1,10 @@
 <?php
-
 namespace luoyy\Blade\Concerns;
 
+use InvalidArgumentException;
+use luoyy\Blade\Support\Arr;
 use luoyy\Blade\Support\HtmlString;
+use luoyy\Blade\View;
 
 trait ManagesComponents
 {
@@ -37,19 +39,35 @@ trait ManagesComponents
     /**
      * Start a component rendering process.
      *
-     * @param  string  $name
+     * @param  \luoyy\Blade\View|string  $view
      * @param  array  $data
      * @return void
      */
-    public function startComponent($name, array $data = [])
+    public function startComponent($view, array $data = [])
     {
         if (ob_start()) {
-            $this->componentStack[] = $name;
+            $this->componentStack[] = $view;
 
             $this->componentData[$this->currentComponent()] = $data;
 
             $this->slots[$this->currentComponent()] = [];
         }
+    }
+
+    /**
+     * Get the first view that actually exists from the given list, and start a component.
+     *
+     * @param  array  $names
+     * @param  array  $data
+     * @return void
+     */
+    public function startComponentFirst(array $names, array $data = [])
+    {
+        $name = Arr::first($names, function ($item) {
+            return $this->exists($item);
+        });
+
+        $this->startComponent($name, $data);
     }
 
     /**
@@ -59,18 +77,21 @@ trait ManagesComponents
      */
     public function renderComponent()
     {
-        $name = array_pop($this->componentStack);
+        $view = array_pop($this->componentStack);
 
-        return $this->make($name, $this->componentData($name))->render();
+        if ($view instanceof View) {
+            return $view->with($this->componentData())->render();
+        } else {
+            return $this->make($view, $this->componentData())->render();
+        }
     }
 
     /**
      * Get the data for the given component.
      *
-     * @param  string  $name
      * @return array
      */
-    protected function componentData($name)
+    protected function componentData()
     {
         return array_merge(
             $this->componentData[count($this->componentStack)],
@@ -88,14 +109,14 @@ trait ManagesComponents
      */
     public function slot($name, $content = null)
     {
-        if (count(func_get_args()) == 2) {
+        if (func_num_args() > 2) {
+            throw new InvalidArgumentException('You passed too many arguments to the [' . $name . '] slot.');
+        } elseif (func_num_args() === 2) {
             $this->slots[$this->currentComponent()][$name] = $content;
-        } else {
-            if (ob_start()) {
-                $this->slots[$this->currentComponent()][$name] = '';
+        } elseif (ob_start()) {
+            $this->slots[$this->currentComponent()][$name] = '';
 
-                $this->slotStack[$this->currentComponent()][] = $name;
-            }
+            $this->slotStack[$this->currentComponent()][] = $name;
         }
     }
 

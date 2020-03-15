@@ -20,11 +20,11 @@ class Autoloader
      */
     public static function autoload($class)
     {
-        if (0 !== strpos($class, __NAMESPACE__)) {
+        if (strpos($class, __NAMESPACE__) !== 0) {
             return;
         }
         // psr-4
-        if (is_file($file = strtr($class, ['luoyy\\Blade\\' => __DIR__ . DIRECTORY_SEPARATOR]) . '.php')) {
+        if (is_file($file = strtr($class, [__NAMESPACE__=> __DIR__ . DIRECTORY_SEPARATOR]) . '.php')) {
             require $file;
         }
     }

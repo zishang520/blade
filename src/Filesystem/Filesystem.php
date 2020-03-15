@@ -1,11 +1,14 @@
 <?php
+namespace luoyy\Blade\Filesystem;
 
-namespace luoyy\Blade;
-
-use Exception;
+use ErrorException;
+use luoyy\Blade\Contracts\Filesystem\FileNotFoundException;
+use luoyy\Blade\Support\Traits\Macroable;
 
 class Filesystem
 {
+    use Macroable;
+
     /**
      * Determine if a file or directory exists.
      *
@@ -15,6 +18,17 @@ class Filesystem
     public function exists($path)
     {
         return file_exists($path);
+    }
+
+    /**
+     * Determine if a file or directory is missing.
+     *
+     * @param  string  $path
+     * @return bool
+     */
+    public function missing($path)
+    {
+        return !$this->exists($path);
     }
 
     /**
@@ -32,7 +46,7 @@ class Filesystem
             return $lock ? $this->sharedGet($path) : file_get_contents($path);
         }
 
-        throw new Exception("File does not exist at path {$path}");
+        throw new FileNotFoundException("File does not exist at path {$path}");
     }
 
     /**
@@ -78,7 +92,7 @@ class Filesystem
             return require $path;
         }
 
-        throw new Exception("File does not exist at path {$path}");
+        throw new FileNotFoundException("File does not exist at path {$path}");
     }
 
     /**
@@ -102,17 +116,42 @@ class Filesystem
     {
         return md5_file($path);
     }
+
     /**
      * Write the contents of a file.
      *
      * @param  string  $path
      * @param  string  $contents
      * @param  bool  $lock
-     * @return int
+     * @return int|bool
      */
     public function put($path, $contents, $lock = false)
     {
         return file_put_contents($path, $contents, $lock ? LOCK_EX : 0);
+    }
+
+    /**
+     * Write the contents of a file, replacing it atomically if it already exists.
+     *
+     * @param  string  $path
+     * @param  string  $content
+     * @return void
+     */
+    public function replace($path, $content)
+    {
+        // If the path already exists and is a symlink, get the real path...
+        clearstatcache(true, $path);
+
+        $path = realpath($path) ?: $path;
+
+        $tempPath = tempnam(dirname($path), basename($path));
+
+        // Fix permissions of tempPath because `tempnam()` creates it with permissions set to 0600...
+        chmod($tempPath, 0777 - umask());
+
+        file_put_contents($tempPath, $content);
+
+        rename($tempPath, $path);
     }
 
     /**
@@ -147,7 +186,7 @@ class Filesystem
      * Get or set UNIX mode of a file or directory.
      *
      * @param  string  $path
-     * @param  int  $mode
+     * @param  int|null  $mode
      * @return mixed
      */
     public function chmod($path, $mode = null)
@@ -209,7 +248,7 @@ class Filesystem
     }
 
     /**
-     * Create a hard link to the target file or directory.
+     * Create a symlink to the target file or directory. On Windows, a hard link is created if the target is a file.
      *
      * @param  string  $target
      * @param  string  $link
@@ -223,7 +262,7 @@ class Filesystem
 
         $mode = $this->isDirectory($target) ? 'J' : 'H';
 
-        exec("mklink /{$mode} \"{$link}\" \"{$target}\"");
+        exec("mklink /{$mode} " . escapeshellarg($link) . ' ' . escapeshellarg($target));
     }
 
     /**
@@ -362,7 +401,7 @@ class Filesystem
      * Find path names matching a given pattern.
      *
      * @param  string  $pattern
-     * @param  int     $flags
+     * @param  int  $flags
      * @return array
      */
     public function glob($pattern, $flags = 0)

@@ -1,5 +1,4 @@
 <?php
-
 namespace luoyy\Blade\Compilers\Concerns;
 
 trait CompilesIncludes
@@ -25,7 +24,7 @@ trait CompilesIncludes
     {
         $expression = $this->stripParentheses($expression);
 
-        return "<?php echo \$__env->make({$expression}, array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>";
+        return "<?php echo \$__env->make({$expression}, \luoyy\Blade\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>";
     }
 
     /**
@@ -38,7 +37,7 @@ trait CompilesIncludes
     {
         $expression = $this->stripParentheses($expression);
 
-        return "<?php if (\$__env->exists({$expression})) echo \$__env->make({$expression}, array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>";
+        return "<?php if (\$__env->exists({$expression})) echo \$__env->make({$expression}, \luoyy\Blade\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>";
     }
 
     /**
@@ -51,7 +50,20 @@ trait CompilesIncludes
     {
         $expression = $this->stripParentheses($expression);
 
-        return "<?php echo \$__env->renderWhen($expression, array_except(get_defined_vars(), array('__data', '__path'))); ?>";
+        return "<?php echo \$__env->renderWhen($expression, \luoyy\Blade\Support\Arr::except(get_defined_vars(), ['__data', '__path'])); ?>";
+    }
+
+    /**
+     * Compile the include-unless statements into valid PHP.
+     *
+     * @param  string  $expression
+     * @return string
+     */
+    protected function compileIncludeUnless($expression)
+    {
+        $expression = $this->stripParentheses($expression);
+
+        return "<?php echo \$__env->renderWhen(! $expression, \luoyy\Blade\Support\Arr::except(get_defined_vars(), ['__data', '__path'])); ?>";
     }
 
     /**
@@ -64,6 +76,6 @@ trait CompilesIncludes
     {
         $expression = $this->stripParentheses($expression);
 
-        return "<?php echo \$__env->first({$expression}, array_except(get_defined_vars(), array('__data', '__path')))->render(); ?>";
+        return "<?php echo \$__env->first({$expression}, \luoyy\Blade\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>";
     }
 }

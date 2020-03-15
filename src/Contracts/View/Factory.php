@@ -1,5 +1,4 @@
 <?php
-
 namespace luoyy\Blade\Contracts\View;
 
 interface Factory
@@ -16,9 +15,9 @@ interface Factory
      * Get the evaluated view contents for the given path.
      *
      * @param  string  $path
-     * @param  array  $data
+     * @param  \luoyy\Blade\Contracts\Support\Arrayable|array  $data
      * @param  array  $mergeData
-     * @return \Illuminate\Contracts\View\View
+     * @return \luoyy\Blade\Contracts\View\View
      */
     public function file($path, $data = [], $mergeData = []);
 
@@ -26,9 +25,9 @@ interface Factory
      * Get the evaluated view contents for the given view.
      *
      * @param  string  $view
-     * @param  array  $data
+     * @param  \luoyy\Blade\Contracts\Support\Arrayable|array  $data
      * @param  array  $mergeData
-     * @return \Illuminate\Contracts\View\View
+     * @return \luoyy\Blade\Contracts\View\View
      */
     public function make($view, $data = [], $mergeData = []);
 
@@ -40,6 +39,24 @@ interface Factory
      * @return mixed
      */
     public function share($key, $value = null);
+
+    /**
+     * Register a view composer event.
+     *
+     * @param  array|string  $views
+     * @param  \Closure|string  $callback
+     * @return array
+     */
+    public function composer($views, $callback);
+
+    /**
+     * Register a view creator event.
+     *
+     * @param  array|string  $views
+     * @param  \Closure|string  $callback
+     * @return array
+     */
+    public function creator($views, $callback);
 
     /**
      * Add a new namespace to the loader.

@@ -1,5 +1,4 @@
 <?php
-
 namespace luoyy\Blade\Engines;
 
 use Closure;
@@ -26,7 +25,7 @@ class EngineResolver
      *
      * The engine string typically corresponds to a file extension.
      *
-     * @param  string   $engine
+     * @param  string  $engine
      * @param  \Closure  $resolver
      * @return void
      */
@@ -41,7 +40,8 @@ class EngineResolver
      * Resolve an engine instance by name.
      *
      * @param  string  $engine
-     * @return \Illuminate\Contracts\View\Engine
+     * @return \luoyy\Blade\Contracts\View\Engine
+     *
      * @throws \InvalidArgumentException
      */
     public function resolve($engine)
@@ -54,6 +54,6 @@ class EngineResolver
             return $this->resolved[$engine] = call_user_func($this->resolvers[$engine]);
         }
 
-        throw new InvalidArgumentException("Engine $engine not found.");
+        throw new InvalidArgumentException("Engine [{$engine}] not found.");
     }
 }

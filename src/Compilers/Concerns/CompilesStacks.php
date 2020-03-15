@@ -1,5 +1,4 @@
 <?php
-
 namespace luoyy\Blade\Compilers\Concerns;
 
 trait CompilesStacks

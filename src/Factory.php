@@ -1,19 +1,19 @@
 <?php
-
 namespace luoyy\Blade;
 
 use InvalidArgumentException;
-use luoyy\Blade\Contracts\Container\Container;
 use luoyy\Blade\Contracts\Support\Arrayable;
 use luoyy\Blade\Contracts\View\Factory as FactoryContract;
 use luoyy\Blade\Engines\EngineResolver;
 use luoyy\Blade\Support\Arr;
 use luoyy\Blade\Support\Str;
+use luoyy\Blade\Support\Traits\Macroable;
 use luoyy\Blade\ViewFinderInterface;
 
 class Factory implements FactoryContract
 {
-    use Concerns\ManagesComponents,
+    use Macroable,
+    Concerns\ManagesComponents,
     Concerns\ManagesLayouts,
     Concerns\ManagesLoops,
     Concerns\ManagesStacks;
@@ -21,23 +21,16 @@ class Factory implements FactoryContract
     /**
      * The engine implementation.
      *
-     * @var \Illuminate\View\Engines\EngineResolver
+     * @var \luoyy\Blade\Engines\EngineResolver
      */
     protected $engines;
 
     /**
      * The view finder implementation.
      *
-     * @var \Illuminate\View\ViewFinderInterface
+     * @var \luoyy\Blade\ViewFinderInterface
      */
     protected $finder;
-
-    /**
-     * The IoC container instance.
-     *
-     * @var \Illuminate\Contracts\Container\Container
-     */
-    protected $container;
 
     /**
      * Data that should be available to all templates.
@@ -55,6 +48,7 @@ class Factory implements FactoryContract
         'blade.php' => 'blade',
         'php' => 'php',
         'css' => 'file',
+        'html' => 'file'
     ];
 
     /**
@@ -74,8 +68,8 @@ class Factory implements FactoryContract
     /**
      * Create a new view factory instance.
      *
-     * @param  \Illuminate\View\Engines\EngineResolver  $engines
-     * @param  \Illuminate\View\ViewFinderInterface  $finder
+     * @param  \luoyy\Blade\Engines\EngineResolver  $engines
+     * @param  \luoyy\Blade\ViewFinderInterface  $finder
      * @return void
      */
     public function __construct(EngineResolver $engines, ViewFinderInterface $finder)
@@ -90,24 +84,26 @@ class Factory implements FactoryContract
      * Get the evaluated view contents for the given view.
      *
      * @param  string  $path
-     * @param  array   $data
-     * @param  array   $mergeData
-     * @return \Illuminate\Contracts\View\View
+     * @param  \luoyy\Blade\Contracts\Support\Arrayable|array  $data
+     * @param  array  $mergeData
+     * @return \luoyy\Blade\Contracts\View\View
      */
     public function file($path, $data = [], $mergeData = [])
     {
         $data = array_merge($mergeData, $this->parseData($data));
 
-        return $this->viewInstance($path, $path, $data);
+        return tap($this->viewInstance($path, $path, $data), function ($view) {
+            $this->callCreator($view);
+        });
     }
 
     /**
      * Get the evaluated view contents for the given view.
      *
      * @param  string  $view
-     * @param  array   $data
-     * @param  array   $mergeData
-     * @return \Illuminate\Contracts\View\View
+     * @param  \luoyy\Blade\Contracts\Support\Arrayable|array  $data
+     * @param  array  $mergeData
+     * @return \luoyy\Blade\Contracts\View\View
      */
     public function make($view, $data = [], $mergeData = [])
     {
@@ -120,20 +116,24 @@ class Factory implements FactoryContract
         // the caller for rendering or performing other view manipulations on this.
         $data = array_merge($mergeData, $this->parseData($data));
 
-        return $this->viewInstance($view, $path, $data);
+        return tap($this->viewInstance($view, $path, $data), function ($view) {
+            $this->callCreator($view);
+        });
     }
 
     /**
      * Get the first view that actually exists from the given list.
      *
      * @param  array  $views
-     * @param  array   $data
-     * @param  array   $mergeData
-     * @return \Illuminate\Contracts\View\View
+     * @param  \luoyy\Blade\Contracts\Support\Arrayable|array  $data
+     * @param  array  $mergeData
+     * @return \luoyy\Blade\Contracts\View\View
+     *
+     * @throws \InvalidArgumentException
      */
     public function first(array $views, $data = [], $mergeData = [])
     {
-        $view = collect($views)->first(function ($view) {
+        $view = Arr::first($views, function ($view) {
             return $this->exists($view);
         });
 
@@ -149,8 +149,8 @@ class Factory implements FactoryContract
      *
      * @param  bool  $condition
      * @param  string  $view
-     * @param  array   $data
-     * @param  array   $mergeData
+     * @param  \luoyy\Blade\Contracts\Support\Arrayable|array  $data
+     * @param  array  $mergeData
      * @return string
      */
     public function renderWhen($condition, $view, $data = [], $mergeData = [])
@@ -166,7 +166,7 @@ class Factory implements FactoryContract
      * Get the rendered contents of a partial from a loop.
      *
      * @param  string  $view
-     * @param  array   $data
+     * @param  array  $data
      * @param  string  $iterator
      * @param  string  $empty
      * @return string
@@ -201,7 +201,7 @@ class Factory implements FactoryContract
     /**
      * Normalize a view name.
      *
-     * @param  string $name
+     * @param  string  $name
      * @return string
      */
     protected function normalizeName($name)
@@ -225,8 +225,8 @@ class Factory implements FactoryContract
      *
      * @param  string  $view
      * @param  string  $path
-     * @param  array  $data
-     * @return \Illuminate\Contracts\View\View
+     * @param  \luoyy\Blade\Contracts\Support\Arrayable|array  $data
+     * @return \luoyy\Blade\Contracts\View\View
      */
     protected function viewInstance($view, $path, $data)
     {
@@ -254,14 +254,14 @@ class Factory implements FactoryContract
      * Get the appropriate view engine for the given path.
      *
      * @param  string  $path
-     * @return \Illuminate\Contracts\View\Engine
+     * @return \luoyy\Blade\Contracts\View\Engine
      *
      * @throws \InvalidArgumentException
      */
     public function getEngineFromPath($path)
     {
         if (!$extension = $this->getExtension($path)) {
-            throw new InvalidArgumentException("Unrecognized extension in file: $path");
+            throw new InvalidArgumentException("Unrecognized extension in file: {$path}");
         }
 
         $engine = $this->extensions[$extension];
@@ -288,7 +288,7 @@ class Factory implements FactoryContract
      * Add a piece of shared data to the environment.
      *
      * @param  array|string  $key
-     * @param  mixed  $value
+     * @param  mixed|null  $value
      * @return mixed
      */
     public function share($key, $value = null)
@@ -388,9 +388,9 @@ class Factory implements FactoryContract
     /**
      * Register a valid view extension and its engine.
      *
-     * @param  string    $extension
-     * @param  string    $engine
-     * @param  \Closure  $resolver
+     * @param  string  $extension
+     * @param  string  $engine
+     * @param  \Closure|null  $resolver
      * @return void
      */
     public function addExtension($extension, $engine, $resolver = null)
@@ -444,7 +444,7 @@ class Factory implements FactoryContract
     /**
      * Get the engine resolver instance.
      *
-     * @return \Illuminate\View\Engines\EngineResolver
+     * @return \luoyy\Blade\Engines\EngineResolver
      */
     public function getEngineResolver()
     {
@@ -454,7 +454,7 @@ class Factory implements FactoryContract
     /**
      * Get the view finder instance.
      *
-     * @return \Illuminate\View\ViewFinderInterface
+     * @return \luoyy\Blade\ViewFinderInterface
      */
     public function getFinder()
     {
@@ -464,7 +464,7 @@ class Factory implements FactoryContract
     /**
      * Set the view finder instance.
      *
-     * @param  \Illuminate\View\ViewFinderInterface  $finder
+     * @param  \luoyy\Blade\ViewFinderInterface  $finder
      * @return void
      */
     public function setFinder(ViewFinderInterface $finder)
@@ -483,31 +483,10 @@ class Factory implements FactoryContract
     }
 
     /**
-     * Get the IoC container instance.
-     *
-     * @return \Illuminate\Contracts\Container\Container
-     */
-    public function getContainer()
-    {
-        return $this->container;
-    }
-
-    /**
-     * Set the IoC container instance.
-     *
-     * @param  \Illuminate\Contracts\Container\Container  $container
-     * @return void
-     */
-    public function setContainer(Container $container)
-    {
-        $this->container = $container;
-    }
-
-    /**
      * Get an item from the shared data.
      *
      * @param  string  $key
-     * @param  mixed   $default
+     * @param  mixed  $default
      * @return mixed
      */
     public function shared($key, $default = null)
